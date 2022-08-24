@@ -1,9 +1,11 @@
+const { express } = require('cookies');
 const jwt = require('jsonwebtoken');
 
+const loginForm =async (req,res)=>res.render('Login');
+const registerForm =async (req,res)=>res.render('Register');
 const login =async(req,res)=>{
-    // const {email,password} = await req.body;
-    const email = 'email from the database';
-    const password = 'password from the database'
+    const {email,password} = await req.body;
+
     if(!email || !password){
         res.status(400).json({
             message:"Please fill all the require fileds"
@@ -24,31 +26,31 @@ const login =async(req,res)=>{
 };
 
 const register =async (req,res)=>{
-    const {email,username,password,confirmpassword} =await req.body;
-    const regExp = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    const {email,username,password,c_password} =await req.body;
+    // const regExp = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
-    if(!email || !password || !username || !confirmpassword) {
+    if(!email || !password || !username || !c_password) {
         res.status(400).json({
             message:'please fill all the require fileds'
         });
     }
-    // else if(email.match(regExp)){
-    //     res.status(400).json({
-    //         message:'your email address is incorrect'
-    //     })
-    // }
     //check the password are the same
-    else if(password !== confirmpassword){
+    else if(password !== c_password){
         res.status(400).json({
             message:'your password are not matching,Please Check your password'
         });
+    }
+    else if(password.length < 6){
+        res.status(400).json({
+            message:'password length at least 6 character'
+        })
     }
     else{
         if(email !== 'aungaung@gmail.com'){
                //keep the email,username,password in the database
                res.status(201).json({
                 message:'your accout is created'
-            }).redirect('/login');
+            });
         }
         else{       
          //get the data from the databse
@@ -60,4 +62,4 @@ const register =async (req,res)=>{
     }
 };
 
-module.exports = {login,register};
+module.exports = {login,register,loginForm,registerForm};

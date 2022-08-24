@@ -4,15 +4,20 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const userRouter = require('./routes/User');
 const authMiddleware = require('./middleware/auth');
+const expressLayouts = require('express-ejs-layouts');
 const PORT = process.env.PORT || 5000;
 
 //middleware
+app.use(expressLayouts);
+app.set('view engine','ejs');
 app.use(cors());
-app.use(bodyParser.urlencoded({extended:true}));
-app.use(bodyParser.json({extended:true,limit:'50MB'}));
+app.use(bodyParser.urlencoded({extended:false}));
+app.use(bodyParser.json({extended:false,limit:'50MB'}));
+app.get('/',(req,res)=>{
+    res.render('Login')
+})
 app.use('/user',userRouter);
-
-app.get('/',authMiddleware,(req,res)=>{
+app.use('/user/data',authMiddleware,(req,res)=>{
     res.send('welcome from API')
 });
 
