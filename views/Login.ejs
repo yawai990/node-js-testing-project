@@ -4,10 +4,13 @@
             <i class="fa-solid fa-arrow-right-to-bracket"></i>
             Log In
         </h1>
-        <form action="login" method="POST" class="">
+        <form action="/login" method="POST" class="">
+            <% if(messages.error) { %>
+                <%= messages.error %>
+                    <% } %>
             <div class="flex md:flex-col gap-2 my-2">
                 <label for="email" class="block w-1/5">Email</label>
-                <input type="text" name="email" id="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
+                <input type="text" name="email" id="email"
                     value="<%= typeof email !== 'undefined' ? email:'' %> "
                     class="w-full p-1 focus:border-blue-500 block border outline-none rounded-lg" required>
             </div>
@@ -20,7 +23,7 @@
             <button class="w-full rounded-lg text-white bg-blue-500 text-center block mt-3 p-1">Log In</button>
         </form>
 
-        <a href="/user/register" class="hover:text-blue-500 block p-1 mt-3 text-center tracking-wider text-sm">Don't
+        <a href="/register" class="hover:text-blue-500 block p-1 mt-3 text-center tracking-wider text-sm">Don't
             have
             account? Create</a>
     </div>

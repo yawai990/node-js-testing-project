@@ -1,26 +1,81 @@
 const express = require('express');
-const app = express();
-const cors = require('cors');
+const expressEjslayout = require('express-ejs-layouts');
+const bcrypt = require('bcrypt'); 
 const bodyParser = require('body-parser');
-const userRouter = require('./routes/User');
-const authMiddleware = require('./middleware/auth');
-const expressLayouts = require('express-ejs-layouts');
-const PORT = process.env.PORT || 5000;
+const app =express();
+const flash = require('express-flash');
+const session = require('express-session');
+const passport = require('passport');
+const initPassport = require('./auth/passport');
+const methoOverride = require('method-override');
+const users = [];
+const {checkAuthenticate,checkNotAuthenticate} = require('./middleware/auth');
+
+
+initPassport(
+    passport,
+    email=>users.find(user=>user.email === email),
+    id=>users.find(user=>user.id === id)
+);
+
+app.use(expressEjslayout);
+app.set('view engine','ejs');
+
 
 //middleware
-app.use(expressLayouts);
-app.set('view engine','ejs');
-app.use(cors());
-app.use(bodyParser.urlencoded({extended:false}));
-app.use(bodyParser.json({extended:false,limit:'50MB'}));
-app.get('/',(req,res)=>{
-    res.render('Login')
+app.use(express.urlencoded({extended:true}))
+app.use(bodyParser.json({urlencoded:false}));
+app.use(methoOverride('_method'));
+app.use(flash());
+app.use(session({
+    secret:'secreat',
+    resave:false,
+    saveUninitialized:false,
+}));
+
+app.use(passport.initialize());
+app.use(passport.session())
+
+app.get('/',checkAuthenticate,(req,res)=>{
+    res.render('Home',{name:req.user.name})
 })
-app.use('/user',userRouter);
-app.use('/user/data',authMiddleware,(req,res)=>{
-    res.send('welcome from API')
+
+app.get('/login',checkNotAuthenticate,(req,res)=>{
+    res.render('Login')
 });
 
+app.post('/login',passport.authenticate('local',{
+    successRedirect:'/',
+    failureRedirect:'/login',
+    failureFlash:true
+}));
 
+app.get('/register',checkNotAuthenticate,(req,res)=>{
+    res.render('Register')
+});
 
-app.listen(PORT,()=>console.log(`server is running in ${PORT}`));
+app.post('/register',async (req,res)=>{
+    const {email,username,password,c_password} = req.body;
+
+    try {   
+        if(password === c_password){
+            const hashedPassword = await bcrypt.hash(password,10);
+
+            users.push({
+                id:Date.now().toString(),
+                name:username,
+                email,
+                password:hashedPassword
+            });
+
+            res.redirect('/login')
+        }
+    } catch (error) {
+            res.redirect('/register');
+    };
+});
+app.delete('/logout',(req,res,next)=>{
+    req.logOut(err=>next(err));
+    res.redirect('/login')
+})
+app.listen(5000);

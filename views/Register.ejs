@@ -1,7 +1,7 @@
 <div class="w-full h-full min-h-screen flex justify-center items-center">
     <div class="sm:w-3/5 w-11/12 md:w-3/12 bg-white rounded-lg p-2 drop-shadow-2xl">
         <h1 class="uppercase text-lg text-center font-semibold tracking-wide">Register</h1>
-        <form action="register" method="POST" class="">
+        <form action="/register" method="POST" class="">
             <div class="flex md:flex-col gap-2 my-2">
                 <label for="username" class="block">UserName</label>
                 <input type="text" name="username" id="username"
@@ -10,7 +10,7 @@
             </div>
             <div class="flex md:flex-col gap-2 my-2">
                 <label for="email" class="block">Email</label>
-                <input type="text" name="email" id="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
+                <input type="text" name="email" id="email"
                     value="<%= typeof email !== 'undefined' ? email:'' %> "
                     class="w-full p-1 focus:border-blue-500 block border outline-none rounded-lg" required>
             </div>
@@ -30,7 +30,7 @@
                 class="w-full rounded-lg text-white bg-blue-500 text-center block mt-3 p-1 tracking-wide hover:bg-blue-700">Register
             </button>
         </form>
-        <a href="/user/login"
+        <a href="/login"
             class="hover:text-blue-500 text-center block p-1 mt-3 text-sm tracking-wide tracking-wider">Have Account?Log
             in</a>
     </div>
